@@ -154,7 +154,7 @@ public class Logica {
                 Sen = (String)this.Valores_Variables.get(Sen);
             System.out.println(Sen);
         }else
-             System.err.println("Problemas en la sentencia mostrar Liena : "+codigo);
+             System.err.println("Problemas en la sentencia mostrar Linea : "+codigo);
        }
       
    private void AsignarValor(String Variable){
