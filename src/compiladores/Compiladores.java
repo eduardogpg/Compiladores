@@ -12,5 +12,6 @@ public class Compiladores {
         // TODO code application logic here
         Compilador ventana = new Compilador();
         ventana.setVisible(true);
+        ventana.setLocationRelativeTo(null);
     }
 }

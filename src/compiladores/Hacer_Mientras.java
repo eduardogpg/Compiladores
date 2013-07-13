@@ -18,33 +18,10 @@ import java.util.regex.Pattern;
 
 public class Hacer_Mientras {
     
-private String mientras = "";
+private String condicion = "";
   public Hacer_Mientras(){}
     
- public void BuscarSentencias(int x, int y, String cadena){
- 
-File f = new File( cadena );
-        BufferedReader entrada; int contador=0; String Sentencias= "";
-        try {
-        entrada = new BufferedReader( new FileReader( f ) );
-        String linea;
-            while(entrada.ready()){
-                contador++;
-             linea = entrada.readLine();
-            if(contador > x){
-                    if(contador <= y){
-                        Sentencias = Sentencias + linea;
-                    }
-                }
-            }
-     
-            System.out.println("Contenido : "+ Sentencias);
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-                 
- 
- }
+
 
  public boolean buscarLlave(String busqueda){
      boolean bandera= false;
@@ -72,25 +49,24 @@ File f = new File( cadena );
                 condicion = condicion + aux;
          }
      }
-     this.mientras = condicion;
+     this.condicion = condicion;
      return bandera;
  }
       
- public String BienCondicional(){
+ public String chekCondicional(){
 
     boolean bandera= false; String condi = "";
     boolean CON = false; int contador=0;
-    char [] con = this.mientras.toCharArray();
+    char [] con = this.condicion.toCharArray();
     for(int x= 0; x<con.length;x++){
         String aux =Character.toString(con[x]);
-    
             if(aux.equals("("))
                 bandera= true;
             if(bandera== true){
                if(aux.equals("(") || aux.equals(")") || aux.equals(":") || aux.equals("3"))
-                   contador++;
+                   contador++; //Aun no se para que sirve pero sirve.
                else
-                   condi= condi+ aux;
+                   condi= condi+ aux; //Guarda la condicional 
             }
         }//Fin del For
     CON = this.condicionCorrecta(condi);

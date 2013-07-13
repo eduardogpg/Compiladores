@@ -6,10 +6,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.HashMap;
+
 
 
 /**
@@ -18,8 +18,7 @@ import java.util.HashMap;
  */
 
 public class Logica {
-    String codigo;
-    StringTokenizer tokens;
+
  
  LinkedList posibles_Reservadas = new LinkedList();
  LinkedList Variables = new LinkedList();
@@ -28,11 +27,15 @@ public class Logica {
  
  private HashMap Valores_Variables = new HashMap();
  
+ int posHacer =0, posMientras=0;
+ boolean hacerMientras=false;
+ 
  //Palbras recervadas
-    Mostrar print;
-    Hacer_Mientras hacer;
+    Mostrar mostrar = new Mostrar();
+    Hacer_Mientras hacer_mientras = new Hacer_Mientras();
 
-   
+ 
+    ShuntingYard shuntingYard;
  
    private void Lexico(String codigo){
         codigo = codigo.replaceAll("[\n\r\t]","");
@@ -48,11 +51,11 @@ public class Logica {
         codigo = codigo.replaceAll(" ", "♫");
         String[] lineas = codigo.split("(:3| )");
         int i=0; 
-        int hacer= this.Buscar("hacer", codigo);
+
         while(i<lineas.length) {
             if(esVariable(lineas[i])) {
                 if(correctaVariable(lineas[i])) {
-                    if(this.saberVariable(lineas[i])){
+                    if(!this.saberVariable(lineas[i])){
                          this.Variables.add(lineas[i]); // Guardamos la Variable en una lista de Variables
                          this.AsignarValor((lineas[i]));//Agignamos el valor a la variable
                     }else 
@@ -60,10 +63,7 @@ public class Logica {
                 } else {
                    System.err.println("Error 1: Variable con nombre no válido, use solo caracteres alfanumericos.\n"); 
                 }
-                } else if(hacer>0) {
-                   //System.out.println("Palabra recervada >w<");
-                   posibles_Reservadas.add(lineas[i]);
-                   
+                
                 } else if (esNumero(lineas[i])) {
                      System.out.println(lineas[i]);
                 } else if (esOperadorRelacional(lineas[i])) {
@@ -78,90 +78,73 @@ public class Logica {
         
     }
     
-   public void Archivo(String codigo){
-        this.hacer = new Hacer_Mientras();
-        File f = new File( codigo );
-        
-        int contador=0; boolean Bandera= false;
-        int x=0,y=0, hacer = 0, mientras = 0;
-        int mostrar=0;
-        BufferedReader entrada;
-        try {
-           
-        entrada = new BufferedReader( new FileReader( f ) );
-        String linea;
-            while(entrada.ready()){
-                contador++;
-                linea = entrada.readLine();
-                this.Lexico(linea);
-                
-                x= this.Buscar("hacer", linea);
-                mostrar = this.Buscar("mostrar", linea);
-                if(mostrar>0){
-                    Mostrar(linea);
-                }
-                if(x>0){
-                    if(mientras==0){
-                    hacer = contador;
-                    Bandera =this.hacer.buscarLlave(linea);
-                 }}
-                if(Bandera){
-                    if(hacer>0){
-                    y= this.Buscar("mientras", linea);
-                    if(y>0){
-                        mientras= contador;
-                        Bandera=this.hacer.buscarllaveCerrar(linea);
-                    }}
-                    }
-                }//Fin del while
-                if ((Bandera) && (mientras > hacer)){
-                    String condicion = this.hacer.BienCondicional();
-                    if(!condicion.equals("Error")){
-                        if(!this.saberVariable(condicion)){
-                             System.out.println("Sentencia correcta");
-                        }else{ System.err.println("Variable no inizializada");}
-                    }else{
-                        System.err.println("Problemas con la sentencia");}
-                }else{
-                    System.err.println("Problemas con la sentencia");
-                }
-            
-        }catch (IOException e) {}
-    }
-                             
+   public void Principal(String linea, int contador){
+      if(this.Buscar("mostrar", linea)>0)
+          this.Mostrar(linea);    
+      else{
+          if(this.Buscar("hacer", linea)==1){
+                posHacer= contador;
+                hacerMientras =this.hacer_mientras.buscarLlave(linea); //Se busca la primera llave
+          }else if(this.Buscar("mientras", linea)==1){
+                 posMientras = contador;
+                if ((posHacer< posMientras) && hacerMientras== true){
+                    hacerMientras= this.hacer_mientras.buscarllaveCerrar(linea);
+                    if(hacerMientras) {// Se encontro la llave de cierre
+                        String mensaje =this.hacer_mientras.chekCondicional();
+                        if(!mensaje.equals("Error")){
+                            if(this.saberVariable(mensaje)){
+                                 System.out.println("Sentencia correcta");
+                            }else{ System.err.println("Variable no inizializada");}
+                            }else{System.err.println("Problemas con la sentencia");}
+                        }else{System.err.println("Problemas con la sentencia (posible errror llaves)");}
+                    
+                }else{System.err.println("Problemas con la sentencia (posible errror llaves)");}
+          }else {
+             this.Lexico(linea);
+          }
+      }//Fin de la comparación en caso de que sea Mostrar
+          
+ 
+   
+   }
+ 
    public void Mostrar(String codigo){
-       int x=0, y =0;
-        String Sen = "";boolean bandera= false;
-        char [] sentencia = codigo.toCharArray();
-        int tres = this.Buscar(":3", codigo+".");
-        if(tres==1){
-            for(int w=0;w<sentencia.length;w++){
-                String aux =Character.toString(sentencia[w]);
-                if(aux.equals("(")){
-                    x++; bandera= true;
-                }else{
-                    if(bandera){
-                        if(!aux.equals(")")) if(!aux.equals(":")) if(!aux.equals("3"))
-                        Sen = Sen+ aux; 
-                    }
-                }if(aux.equals(")"))
-                    y++;
-            }
-         }else
-            System.err.println("Falta :3 en la linea "+ codigo);
-        if(x==y && (x!=0 && y!=0)){
-            if(!this.saberVariable(Sen))
-                Sen = (String)this.Valores_Variables.get(Sen);
-            System.out.println(Sen);
+    if(this.Buscar(":3", codigo+".")==1){
+        String mensaje = this.mostrar.correctarEstructura(codigo);
+        if(!mensaje.equals("N_aDMiTibLe")){
+            if(this.saberVariable(mensaje))
+                mensaje = (String)this.Valores_Variables.get(mensaje);
+            //this.mostrar.imprimir(mensaje);
+        this.MostrarConsola(mensaje);
         }else
-             System.err.println("Problemas en la sentencia mostrar Linea : "+codigo);
-       }
-      
+            System.err.println("Problemas con la estructura de Mostrar");
+       }else{
+        System.err.println("Problemas con la estructura de Mostrar(Problema quizas :3 )");
+    }}
+     
+   public void MostrarConsola(String mensaje){
+        //this.consola.MensajeConsola(mensaje);
+       System.out.println(mensaje);
+   }
+   
+   private void AnalizadorSantactico(String nombre,String valor){
+       this.shuntingYard = new ShuntingYard(valor);
+       valor = this.shuntingYard.aRPN();
+       Arbol arbol = new Arbol(valor);
+       int nuevoValor  = arbol.postOrdenInverso(arbol.root);
+       Valores_Variables.put(nombre, nuevoValor);
+       System.out.println(nuevoValor);
+       
+   }
+   
    private void AsignarValor(String Variable){
-    boolean bandera= false;int pos=0;
+    boolean bandera= false, ShuntingYarda= false;
     String nombre = "", valor = "";
-    int interacciones = this.Buscar("=", Variable);
-    if(interacciones== 1){
+   
+    if(this.Buscar("(", Variable)>0) //Buscando si estamos asiganado un valor a la variable
+       ShuntingYarda= true;
+                
+    if(this.Buscar("=", Variable)== 1){
         char [] buscador= Variable.toCharArray();
                   for(int y=0; y<buscador.length;y++){
                             String aux =Character.toString(buscador[y]);    
@@ -177,25 +160,30 @@ public class Logica {
                                         valor = valor+aux;
                                 }
                             }
-                        }//Fin del  for
-                  if(Valores_Variables.containsKey(nombre)){ //La variable ya se encuentra ?
-                            if(Valores_Variables.get(nombre) == valor) //Comparamos si su valor es nuevo
-                                System.out.println("Variable ya declarada"+ nombre);
-                            else{
-                                this.Valores_Variables.put(nombre, valor); System.out.println("Nuevo valor a: "+ nombre);
-                            } 
-                        }else{ //Si no se encuentra se guarda
-                            SoloVariables.add(nombre);
-                        } //Reiniciamos valores
-                        Valores_Variables.put(nombre, valor);
-                        nombre=""; valor=""; bandera= false;
+                   }//Fin del  for
+                  if(ShuntingYarda){
+                      //this.AnalizadorSantactico(nombre,valor);
+                  }
+                  else{//La variable ya tiene un nuevo valor asiganado ya no usaremos el ShutingYard
+                        if(Valores_Variables.containsKey(nombre)){ //La variable ya se encuentra ?
+                                  if(Valores_Variables.get(nombre) == valor) //Comparamos si su valor es nuevo
+                                      System.out.println("Variable ya declarada"+ nombre);
+                                  else{
+                                      this.Valores_Variables.put(nombre, valor); System.out.println("Nuevo valor a: "+ nombre);
+                                  } 
+                       }else{ //Si no se encuentra se guarda
+                             SoloVariables.add(nombre);
+                       } //Reiniciamos valores
+                         Valores_Variables.put(nombre, valor);
+                              nombre=""; valor=""; bandera= false;
+                  }
     }else{
         System.err.println("Problemas con la asignacion de valores");
     }
   }
     
    private boolean saberVariable(String variable){
-        if(!Valores_Variables.containsKey(variable))
+        if(Valores_Variables.containsKey(variable))
             return true;
         else
             return false;
@@ -233,7 +221,7 @@ public class Logica {
 
     }
     
-    private boolean esNumero(String texto) {
+   private boolean esNumero(String texto) {
         Pattern p = Pattern.compile("[0-9]");
         Matcher m = p.matcher(texto);
         if (m.find()) {
@@ -243,14 +231,14 @@ public class Logica {
 
     }
     
-    private boolean esOperadorRelacional(String texto) {
+   private boolean esOperadorRelacional(String texto) {
         if(texto.matches("(>=|<=|>|<|==|<>)")) {
             return true;
         } 
         return false;
     }
     
-    private boolean esOperadorAritmetico(String texto) {
+   private boolean esOperadorAritmetico(String texto) {
         if(texto.matches("(\\*|/|\\+|-)")) {
             return true;
         } 
