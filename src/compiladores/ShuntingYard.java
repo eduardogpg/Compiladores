@@ -6,6 +6,7 @@ package compiladores;
 
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -19,13 +20,25 @@ public class ShuntingYard {
     String [] o2 = {"*","/"};
     String [] seperadores = {"(",")"};
     ArrayList salida = new ArrayList();
-    Stack op = new Stack();
+    Stack operadores = new Stack();
     
     
-    ShuntingYard(String s){
+    ShuntingYard(){
+    }
+    public void Init(String s){
         lista = new ArrayList();
         lista = this.convertirALista(s);
     }
+    
+    public String SoloLexico(String allText){
+    StringTokenizer st = new StringTokenizer(allText,":3") ;
+    String line="";
+    while (st.hasMoreTokens()) {
+             line = st.nextToken();
+           }
+    return line;
+    }
+    
     public String aRPN(){
         if(lista == null){
             return "";
@@ -36,41 +49,41 @@ public class ShuntingYard {
                 salida.add(s);
             }
             else if(esOperador2(s)){
-                if(op.empty()) op.add(s);
+                if(operadores.empty()) operadores.add(s);
                 else{
-                    while(esOperador2(op.peek().toString())){
-                        String a = (String) op.pop();
+                    while(esOperador2(operadores.peek().toString())){
+                        String a = (String) operadores.pop();
                         salida.add(a);
-                        if(op.empty()) break;
+                        if(operadores.empty()) break;
                     }
-                    op.add(s);
+                    operadores.add(s);
                 }
             }
             else if(esOperador1(s)){
                 
-                if(op.empty()) op.add(s);
+                if(operadores.empty()) operadores.add(s);
                 else{
-                    while(esOperador2(op.peek().toString())){
-                        String a = (String) op.pop();
+                    while(esOperador2(operadores.peek().toString())){
+                        String a = (String) operadores.pop();
                         salida.add(a);
-                        if(op.empty()) break;
+                        if(operadores.empty()) break;
                     }
                     
-                    op.add(s);
+                    operadores.add(s);
                 }
             }
             else if(esSeperador(s)){
                 if(s.equals("(")){
-                    op.add(s);
+                    operadores.add(s);
                 }
                 else if(s.equals(")")){
                     boolean b = true;
                     while(b){
-                        if(op.empty()){
+                        if(operadores.empty()){
                             System.err.println("Error de sintáxis");
                             break;
                         }
-                        String ay = (String) op.pop();
+                        String ay = (String) operadores.pop();
                         if(ay.equals("(")){
                             b = false;
                         }
@@ -81,8 +94,8 @@ public class ShuntingYard {
                 }
             }
         }
-        while(!op.empty()){
-            String ay = (String) op.pop();
+        while(!operadores.empty()){
+            String ay = (String) operadores.pop();
             if(ay.equals("(") || ay.equals(")")) {
                 System.err.println("Error de sintáxis");
                 return null;
@@ -90,6 +103,8 @@ public class ShuntingYard {
             salida.add(ay);
         }
         //Collections.reverse(salida);
+        
+       
         return arrayString(salida);
         
     }
@@ -144,5 +159,10 @@ public class ShuntingYard {
         }
         return r;
     }
-    
+    public int Arbol(String valor){
+       Arbol arbol = new Arbol(valor);
+       int nuevoValor  = arbol.postOrdenInverso(arbol.root);
+       return nuevoValor;
+    }
+
 }

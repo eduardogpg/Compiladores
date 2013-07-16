@@ -22,7 +22,7 @@ public class Arbol {
         tokens = this.convertirALista(s);
         this.s = s;
         buildTree(root,tokens);
-        System.out.println(root.d.v);
+        
     }
     public void buildTree(Nodo r,Stack t){
         if(t.empty()) return;

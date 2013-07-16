@@ -12,11 +12,12 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Compilador extends javax.swing.JFrame {
+    
    
    String PATH, contenido;
    String path="";
    Logica Logico = new Logica();
-   boolean baderaOpen = false;
+      
     public Compilador() {
         initComponents();
     }
@@ -65,12 +66,11 @@ public class Compilador extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
-                        .addComponent(jScrollPane2))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
+                .addContainerGap(70, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton2)
@@ -88,33 +88,60 @@ public class Compilador extends javax.swing.JFrame {
                     .addComponent(jButton2)
                     .addComponent(jButton1))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(47, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        int contador = 0;
-        try{ //Boton para compilar el Archivo
+       if(this.jTextArea2.getText().equals("")){
+           if(this.Compilar())
+                this.Consola(Logico.MostrarConsola());
+           else
+               this.Consola("Funcion principal con errores de llave");
+       }else{//El jTextArea tiene algo :/
+            Logico.limpiarConsola();
+            this.jTextArea2.setText("");
+            if(this.Compilar())
+                this.Consola(Logico.MostrarConsola());
+           else
+               this.Consola("Funcion principal con errores de llave");
+       }
        
-           // Logico.Principal(PATH); //Metodo principal de la clase Logica pasamos la ruta para que lo bsuque
+    }//GEN-LAST:event_jButton1ActionPerformed
+    
+    private boolean Compilar(){
+    int contador = 0;
+        boolean bandera= false;
+        String line="";
+        try{ //Boton para compilar el Archivo
            String allText = this.jTextArea1.getText() ;
            StringTokenizer st = new StringTokenizer(allText,"\n") ;
            while (st.hasMoreTokens()) {
-               contador++;
-                String line = st.nextToken();
+              contador++;
+              line = st.nextToken();
+               if (contador==1)
+                   bandera=this.Logico.main(line, bandera);
+               if(!line.equals(""))
                 this.Logico.Principal(line, contador);
            }
+           if(bandera)
+               bandera=this.Logico.main(line, bandera);
+           
+           if(!bandera)
+              bandera= false;
+           return bandera; //Regresamos si la funcion se encuentra bien escrita
         }catch(Exception  e){
             this.Consola("Error al Compilar el Archivo");
+             return bandera= false;
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }    
     public void Consola(String mensaje){
-        this.jTextArea2.append(mensaje+ "\n");
+        this.jTextArea2.append(mensaje);
     }
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
        try {//Boton para abrir el archivo
@@ -125,8 +152,7 @@ public class Compilador extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_jButton2ActionPerformed
-  
-    
+
     private void abrir() throws IOException {
 
         JFileChooser JFC = new JFileChooser();
@@ -135,8 +161,7 @@ public class Compilador extends javax.swing.JFrame {
         if (abrir == JFileChooser.APPROVE_OPTION) {
             FileReader FR = null;
             BufferedReader BR = null;
-            this.baderaOpen = true;
-         try {
+          try {
     
                 File archivo = JFC.getSelectedFile();//abre un archivo .lengf
                 

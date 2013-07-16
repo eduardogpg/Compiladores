@@ -6,10 +6,6 @@ package compiladores;
  * @author Eduardo
  */
 public class Mostrar {
-  private String Sentencia="";
-    public Mostrar(){
-       
-    }
     public String correctarEstructura(String codigo){
         int x=0, y =0; //Variables para el control de los parentesis
         String Sen = "";int contador=0;
@@ -26,8 +22,7 @@ public class Mostrar {
                         contador++;
                     else
                         Sen = Sen+ aux;
-                }
-                        
+                }         
             }if(aux.equals(")"))
                 y++;
         }//Fin del for
@@ -36,10 +31,5 @@ public class Mostrar {
         }else
             return Sen="N_aDMiTibLe";
     }
-    public void imprimir(String sentencia){
-        System.out.println(sentencia);
-    }
-    public void comillas(String sentencia){
     
-    }     
 }
