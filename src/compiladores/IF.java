@@ -37,6 +37,9 @@ public class IF {
     public boolean init(String linea){
         return this.BuscarCondicion(linea);
     }
+    public void LimpiarHashMap(){
+        Valores_Variables.clear();
+    }
     
     private boolean BuscarCondicion(String linea){
         char [] sentencia = linea.toCharArray();
@@ -72,7 +75,7 @@ public class IF {
         return bandera;
     }
     
-    public void tablavalores(HashMap mapa){
+    public void tablavalores(HashMap mapa){ //Metodo que me sirve para saber si la condicion contiene variables
         Valores_Variables = mapa;
         if(this.Valores_Variables.containsKey(this.primeraCondicion))
             this.primeraCondicion = (String)this.Valores_Variables.get(this.primeraCondicion);

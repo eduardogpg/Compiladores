@@ -126,8 +126,11 @@ public class Compilador extends javax.swing.JFrame {
               line = st.nextToken();
                if (contador==1)
                    bandera=this.Logico.main(line, bandera);
-               if(!line.equals(""))
-                this.Logico.Principal(line, contador);
+               if(!line.equals("")){
+                   this.Logico.Principal(line, contador);
+                   contador++;
+               }
+                
            }
            if(bandera)
                bandera=this.Logico.main(line, bandera);

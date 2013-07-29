@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public class Logica {
 /*
- Problemas a resolver , mostrar debe de estar al principio
+  Problemas a resolver , mostrar debe de estar al principio
  * mientras debe validar :3 al final
  * 
  */
@@ -25,11 +25,11 @@ public class Logica {
  
  private HashMap Valores_Variables = new HashMap();
  
- int posHacer =0, posMientras=0;
- boolean hacerMientras=false;
- String mensajeConsola = "";
+    int posHacer =0, posMientras=0;
+    boolean hacerMientras=false;
+    String mensajeConsola = "";
   
- //Palbras recervadas
+    //Palbras recervadas
     Mostrar mostrar = new Mostrar();
     Hacer_Mientras hacer_mientras = new Hacer_Mientras();
     IF si = new IF();
@@ -128,9 +128,9 @@ public class Logica {
    
    private boolean IF(String linea){
        boolean bandera= false;
-       if(this.Buscar("{", linea+".")==1){
-           if(this.Buscar("{", linea)==0){ 
-                si.variables(this.SoloVariables);
+       if(this.Buscar("{", linea+".")==1){ //Me ayuda a saber que las llaves
+           if(this.Buscar("{", linea)==0){ // de apertura  deben de estar al final de la linea
+                si.variables(this.SoloVariables); //Paso las variables a una lista que se encuentra en la clas IF
                 if(si.init(linea)){
                     si.tablavalores(this.Valores_Variables);
                     if(!si.getError()) {
@@ -154,6 +154,7 @@ public class Logica {
     if(!this.esVariable(codigo)){ //Preguntamos si es una variable, puede darse el caso
     if(this.Buscar(":3", codigo+".")==1){
         String mensaje = this.mostrar.correctarEstructura(codigo);
+        System.out.println("El mensaje que se imprimira es "+ mensaje);
         if(!mensaje.equals("N_aDMiTibLe")){
             if(this.saberVariable(mensaje))
                 mensaje = (String)this.Valores_Variables.get(mensaje);
@@ -175,7 +176,9 @@ public class Logica {
    
    public void limpiarConsola(){
        mensajeConsola = "";
+       this.Valores_Variables.clear();
        c.limpiarConsola();
+       si.LimpiarHashMap();
    }
    
    private void AnalizadorSantactico(String nombre,String valor){
